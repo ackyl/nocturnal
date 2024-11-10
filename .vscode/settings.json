@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Nocturne.sln"
+    "dotnet.defaultSolution": "nocturnal.sln"
 }

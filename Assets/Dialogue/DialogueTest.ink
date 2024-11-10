@@ -1,64 +1,55 @@
-﻿// Define variables at the start
-VAR agent_name = "Agent Black"
-VAR mission_status = "not_triggered"
+﻿// DEFINE VARIABLE - ONLY CHANGE VISITOR_NAME
+VAR visitor_name = "Cognac"
+VAR protagonist_name = ""
+VAR dialogue_state = "start"
+VAR talking = ""
 
-// Starting point of the conversation
--> agent_arrival
+// DIALOGUE STATE = START
+-> visitor_arrival
 
-== agent_arrival ==
-Hi, I'm {agent_name} I need a room for tonight, something that ensures privacy and aligns with my usual preferences.
+== visitor_arrival ==
+~ talking = visitor_name
+I need a room for tonight.
 
-* [Certainly, any preferences?] -> preferences
-* [We have a special offer.] -> special_offer
+* [>]
 
-== preferences ==
-Something with a view of the "moonlight," away from noise and distractions, would be ideal for a peaceful stay.
+    Preferably the one with the AC.
 
-* [We have "midnight blue" room.] -> midnight_blue
-* [All rooms have great views.] -> general_view
+    ** [Okay.] -> review_document
+    ** [Sure.] -> review_document
 
-== special_offer ==
-I'm interested. Tell me more about this offer and whether it includes any additional perks.
+// DIALOGUE STATE = REVIEW DOCUMENT
+== review_document ==
+~ dialogue_state = "get_document"
+~ talking = visitor_name
+Here's the document.
 
-* [With "golden hour" perks.] -> golden_hour
-* [Ideal for "half past two."] -> half_past_two
+* [>] -> finish_document
 
-== midnight_blue ==
-Excellent. Is it secure? I want to be certain there are no unexpected interruptions.
+== finish_document ==
+~ dialogue_state = "finish_document"
+~ talking = protagonist_name
+Your document is fine, thank you.
 
-* [Absolutely, maximum privacy.] -> confirm_exit
-* [You'll find it most discreet.] -> confirm_exit
+* [>] -> give_card
 
-== general_view ==
-I prefer something more... exclusive, suited to someone with specific requirements for discretion.
+// DIALOGUE STATE = GIVE CARD
+== give_card ==
+~ dialogue_state = "card"
+~ talking = protagonist_name
+Wait a moment, I'm getting your card.
 
-* [Our "midnight blue" fits.] -> midnight_blue
-* [We offer extra privacy.] -> confirm_exit
+* [x] -> closing
 
-== golden_hour ==
-Sounds suitable. Any extras? Perhaps something that adds to the ambiance or privacy?
+== closing ==
+There you go.
 
-* [Access to "silver feather."] -> confirm_exit
-* [Free "blue case" service.] -> confirm_exit
+* [>]
+    ~ talking = visitor_name
+    Thank you, {protagonist_name}.
+    ** [>] -> end_conversation
 
-== half_past_two ==
-Just what I needed, perfectly timed. I trust all details are arranged in advance.
-
-* [Proceed with booking?] -> confirm_exit
-* [Any additional requests?] -> additional_requests
-
-== additional_requests ==
-Ensure the exits are accessible, with minimal staff presence for complete control.
-
-* [Understood, all is set.] -> end_conversation
-* [Security will be informed.] -> end_conversation
-
-== confirm_exit ==
-Thank you for your assistance. I expect everything to proceed smoothly, without disruptions.
-
-* [Always a pleasure to help.] -> end_conversation
-* [We're here for you anytime.] -> end_conversation
-
+// DIALOGUE STATE = END
 == end_conversation ==
-~ mission_status = "triggered"
+~ dialogue_state = "end"
 -> END
