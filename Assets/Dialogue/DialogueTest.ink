@@ -1,5 +1,5 @@
 ﻿// DEFINE VARIABLE - ONLY CHANGE VISITOR_NAME
-VAR visitor_name = "Cognac"
+VAR visitor_name = "Igor the 3rd"
 VAR protagonist_name = ""
 VAR dialogue_state = "start"
 VAR talking = ""
