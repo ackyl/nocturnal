@@ -12,6 +12,12 @@ public class EncounterManager : MonoBehaviour
 
     public RectTransform characterUI;
 
+    public RectTransform[] cardUI;
+
+    // ---------------------------- //
+
+    private int _activeIndex;
+
     // ---------------------------- //
 
     void Awake()
@@ -41,16 +47,38 @@ public class EncounterManager : MonoBehaviour
     public void HideCharacter()
     {
         // hide to right
-        characterUI.DOAnchorPos(new Vector3(-500, -27, 0), 1f).SetEase(Ease.InQuad);
+        characterUI.DOAnchorPos(new Vector3(500, -27, 0), 1f).SetEase(Ease.InQuad);
     }
 
-    public void CardHover(RectTransform card)
+    public void CardClick(int index)
     {
-        card.DOAnchorPosY(card.anchoredPosition.y + 18, 0.2f).SetEase(Ease.Linear);
+        if (index == _activeIndex)
+        {
+            // when active one clicked again, deactivate it
+            CardUnhover(_activeIndex);
+            _activeIndex = 99;
+        }
+        else
+        {
+            _activeIndex = index;
+            CardHover(_activeIndex);
+            CardUnhover(_activeIndex == 0 ? 1 : 0);
+        }
     }
 
-    public void CardUnhover(RectTransform card)
+    public void CardHover(int index)
     {
-        card.DOAnchorPosY(24, 0.2f).SetEase(Ease.Linear);
+        RectTransform card = cardUI[index];
+        card.DOAnchorPosY(42, 0.2f).SetEase(Ease.Linear);
+    }
+
+    public void CardUnhover(int index)
+    {
+        RectTransform card = cardUI[index];
+
+        if (_activeIndex != index)
+        {
+            card.DOAnchorPosY(24, 0.2f).SetEase(Ease.Linear);
+        }
     }
 }

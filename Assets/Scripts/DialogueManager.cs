@@ -40,6 +40,8 @@ public class DialogueManager : MonoBehaviour
 
     private string _dialogueState;
 
+    private bool _documentShown = false;
+
     // ---------------------------- //
 
     void Awake()
@@ -68,7 +70,7 @@ public class DialogueManager : MonoBehaviour
         // handle dialogue state specific changes
         _story.ObserveVariable("dialogue_state", (string varName, object newValue) =>
         {
-            Debug.Log($"Variable '{varName}' updated to: {newValue}");
+            // Debug.Log($"Variable '{varName}' updated to: {newValue}");
 
             _dialogueState = newValue.ToString();
 
@@ -80,6 +82,12 @@ public class DialogueManager : MonoBehaviour
             if (newValue.ToString() == "finish_document")
             {
                 HideDocument();
+            }
+
+            if (newValue.ToString() == "end")
+            {
+                EncounterManager.instance.HideCharacter();
+                ClearAllUI();
             }
         });
 
@@ -144,12 +152,15 @@ public class DialogueManager : MonoBehaviour
 
     public void MakeChoice(int choiceIndex)
     {
-        if (_story.canContinue || _story.currentChoices.Count > 0)
+        if (_dialogueState != "card")
         {
-            if (_story.currentChoices.Count > choiceIndex)
+            if (_story.canContinue || _story.currentChoices.Count > 0)
             {
-                _story.ChooseChoiceIndex(choiceIndex);
-                ContinueStory();
+                if (_story.currentChoices.Count > choiceIndex)
+                {
+                    _story.ChooseChoiceIndex(choiceIndex);
+                    ContinueStory();
+                }
             }
         }
     }
@@ -159,6 +170,14 @@ public class DialogueManager : MonoBehaviour
         playerResponseUI1.text = "";
         playerResponseUI2.text = "";
     }
+
+    private void ClearAllUI()
+    {
+        characterName.text = "";
+        playerResponseUI1.text = "";
+        playerResponseUI2.text = "";
+    }
+
     private void UpdateChoiceUI()
     {
         // visitorChatUI.text = _visitorChat;
@@ -185,6 +204,8 @@ public class DialogueManager : MonoBehaviour
 
     public void ShowDocument()
     {
+        _documentShown = true;
+
         // Reset position and opacity
         documentUI.anchoredPosition = _originalDocumentUIPosition + new Vector3(600, 0, 0); // Offset start position
         canvasGroup.alpha = 0;
@@ -204,13 +225,36 @@ public class DialogueManager : MonoBehaviour
 
     public void HideDocument()
     {
+        _documentShown = false;
+
         // Disable interaction immediately
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
 
         // Animate to hidden position and opacity
-        documentUI.DOAnchorPos(_originalDocumentUIPosition + new Vector3(600, 0, 0), 1f).SetEase(Ease.InQuad); // Move downward
+        documentUI.DOAnchorPos(new Vector3(600, documentUI.anchoredPosition.y, 0), 1f).SetEase(Ease.InQuad); // Move downward
         canvasGroup.DOFade(0, 0.5f).SetEase(Ease.InQuad);
+    }
+
+    public void OnDocumentShowHideClick()
+    {
+        if (_documentShown)
+        {
+            HideDocument();
+        }
+        else
+        {
+            ShowDocument();
+        }
+    }
+
+    public void SubmitCard()
+    {
+        if (_dialogueState == "card")
+        {
+            _story.ChooseChoiceIndex(0);
+            ContinueStory();
+        }
     }
 
     private IEnumerator PlayRandomTypingSoundCoroutine(float totalDuration)
@@ -219,8 +263,6 @@ public class DialogueManager : MonoBehaviour
         float elapsedTime = 0f;
 
         AudioSource typingAudio = gameObject.GetComponent<AudioSource>();
-
-        Debug.Log(typingAudio.volume);
 
         while (elapsedTime < totalDuration)
         {

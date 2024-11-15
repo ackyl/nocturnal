@@ -13,16 +13,28 @@ I need a room for tonight.
 
 * [>]
 
-    Preferably the one with the AC.
+    Preferably the one with the AC. That's all.
 
-    ** [Okay.] -> review_document
-    ** [Sure.] -> review_document
+    ** [Okay.] -> show_document
+    ** [Sure.] -> show_document
+
+== show_document ==
+~ talking = protagonist_name
+Okay. Here's your documented request. Please sign it.
+
+* [>] -> fill_document
+
+== fill_document ==
+~ talking = visitor_name
+Sure.
+
+* [>] -> review_document
 
 // DIALOGUE STATE = REVIEW DOCUMENT
 == review_document ==
 ~ dialogue_state = "get_document"
 ~ talking = visitor_name
-Here's the document.
+There you go.
 
 * [>] -> finish_document
 
@@ -42,6 +54,7 @@ Wait a moment, I'm getting your card.
 * [x] -> closing
 
 == closing ==
+~ dialogue_state = "card_given"
 There you go.
 
 * [>]

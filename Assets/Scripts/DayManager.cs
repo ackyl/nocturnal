@@ -25,7 +25,10 @@ public class DayManager : MonoBehaviour
     {
         CodeManager.instance.GenerateDailyCode().OnComplete(() =>
         {
-            EncounterManager.instance.GenerateVisitor();
+            DOVirtual.DelayedCall(1.25f, () =>
+            {
+                EncounterManager.instance.GenerateVisitor();
+            });
         });
     }
 }
